@@ -47,7 +47,7 @@ public class ScpService {
         }
     }
 
-    public void getFile(String ip, Integer port, String user, String password, String privateKey, boolean usePassword,
+    /*public void getFile(String ip, Integer port, String user, String password, String privateKey, boolean usePassword,
             String remoteFile, String path) {
         Connection connection = new Connection(ip, port);
         try {
@@ -65,9 +65,9 @@ public class ScpService {
         } finally {
             connection.close();
         }
-    }
+    }*/
 
-    public void putFile(String ip, Integer port, String user, String password, String privateKey, boolean usePassword,
+    /*public void putFile(String ip, Integer port, String user, String password, String privateKey, boolean usePassword,
             String localFile, String remoteTargetDirectory) {
         log.info("Start to connect {}:{}", ip, port);
         Connection connection = new Connection(ip, port);
@@ -85,7 +85,7 @@ public class ScpService {
         } finally {
             connection.close();
         }
-    }
+    }*/
     
     public void put(RemoteCommandExecutorConfig config,String localFile,
             String remoteTargetDirectory) {
@@ -101,6 +101,11 @@ public class ScpService {
     
     private void putWithPrivateKey(String ip, Integer port, String user, String privateKey, String localFile,
             String remoteTargetDirectory) {
+        File file = new File(localFile);
+        if (!file.isFile()) {
+            log.error("file [{}] not exist.", localFile);
+            throw new WecubeCoreException("3223", String.format("file [%s] not exist.", localFile));
+        }
         Connection conn = new Connection(ip, port);
         try {
             conn.connect();
@@ -109,7 +114,7 @@ public class ScpService {
                 log.info("Connection is OK");
                 SCPClient scpClient = conn.createSCPClient();
                 log.info("scp local file [{}] to remote target directory [{}]", localFile, remoteTargetDirectory);
-                scpClient.put(localFile, remoteTargetDirectory, "7777");
+                scpClient.put(localFile, file.length(), remoteTargetDirectory, "7777");
             } else {
                 log.info("User or password incorrect");
                 throw new WecubeCoreException("3222", "User or password incorrect");
@@ -126,6 +131,11 @@ public class ScpService {
 
     private void put(String ip, Integer port, String user, String password, String localFile,
             String remoteTargetDirectory) {
+        File file = new File(localFile);
+        if (!file.isFile()) {
+            log.error("file [{}] not exist.", localFile);
+            throw new WecubeCoreException("3223", String.format("file [%s] not exist.", localFile));
+        }
         Connection conn = new Connection(ip, port);
         try {
             conn.connect();
@@ -134,7 +144,7 @@ public class ScpService {
                 log.info("Connection is OK");
                 SCPClient scpClient = conn.createSCPClient();
                 log.info("scp local file [{}] to remote target directory [{}]", localFile, remoteTargetDirectory);
-                scpClient.put(localFile, remoteTargetDirectory, "7777");
+                scpClient.put(localFile, file.length(), remoteTargetDirectory, "7777");
             } else {
                 log.info("User or password incorrect");
                 throw new WecubeCoreException("3222", "User or password incorrect");
