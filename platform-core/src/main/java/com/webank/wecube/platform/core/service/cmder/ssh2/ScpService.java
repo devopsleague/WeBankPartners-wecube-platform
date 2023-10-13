@@ -106,6 +106,7 @@ public class ScpService {
             log.error("file [{}] not exist.", localFile);
             throw new WecubeCoreException("3223", String.format("file [%s] not exist.", localFile));
         }
+        log.debug("localFile [{}] length [{}]", localFile, file.length());
         Connection conn = new Connection(ip, port);
         try {
             conn.connect();
@@ -136,6 +137,7 @@ public class ScpService {
             log.error("file [{}] not exist.", localFile);
             throw new WecubeCoreException("3223", String.format("file [%s] not exist.", localFile));
         }
+        log.debug("localFile [{}] length [{}]", localFile, file.length());
         Connection conn = new Connection(ip, port);
         try {
             conn.connect();
