@@ -121,7 +121,7 @@ export default {
   display: block;
 }
 .content-container {
-  padding: 5px 30px;
+  padding: 5px 10px;
 }
 .ivu-breadcrumb {
   color: #515a6e;
