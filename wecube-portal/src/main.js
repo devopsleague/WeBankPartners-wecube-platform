@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
+import store from './store'
 
 import ViewUI from 'view-design'
 import 'view-design/dist/styles/iview.css'
@@ -27,10 +28,35 @@ Vue.use(ViewUI, {
   locale
 })
 
+const vm = new Vue({
+  router,
+  store,
+  render: h => h(App)
+})
+window.vm = vm
+window.locale = (key, obj) => {
+  const lang = vm._$lang.locales[key]
+  let newLang = {}
+  if (lang) {
+    newLang = { ...lang, ...obj }
+    vm._$lang.locales[key] = newLang
+  }
+}
+window.addOptions = options => {
+  Object.keys(options).forEach(key => {
+    // eslint-disable-next-line no-proto
+    vm.__proto__[key] = options[key]
+  })
+}
+
+vm.$mount('#wecube_app')
+
 window.request = req
 window.needReLoad = true
 window.routers = []
-
+store.dispatch('getAllPluginPackageResourceFiles')
+window.needReLoad = false
+store.dispatch('updateMenus')
 class UserWatch {
   constructor () {
     this.handles = {}
@@ -178,24 +204,3 @@ router.beforeEach((to, from, next) => {
     }
   }
 })
-const vm = new Vue({
-  router,
-  render: h => h(App)
-})
-window.vm = vm
-window.locale = (key, obj) => {
-  const lang = vm._$lang.locales[key]
-  let newLang = {}
-  if (lang) {
-    newLang = { ...lang, ...obj }
-    vm._$lang.locales[key] = newLang
-  }
-}
-window.addOptions = options => {
-  Object.keys(options).forEach(key => {
-    // eslint-disable-next-line no-proto
-    vm.__proto__[key] = options[key]
-  })
-}
-
-vm.$mount('#wecube_app')

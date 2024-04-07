@@ -794,7 +794,7 @@ export default {
       this.updateMenus()
     },
     updateMenus () {
-      this.$eventBusP.$emit('updateMenus')
+      this.$store.dispatch('updateMenus')
     },
     async getAvailableInstancesByPackageId (id) {
       this.isLoading = true

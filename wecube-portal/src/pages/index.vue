@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="header">
-      <Header ref="changeMneus" @allMenus="allMenus" />
+      <Header ref="changeMneus" />
     </div>
     <div class="content-container">
       <Breadcrumb :style="setBreadcrumbStyle" v-if="isShowBreadcrum">
@@ -19,6 +19,7 @@
 <script>
 import Header from './components/header'
 import { MENUS } from '../const/menus.js'
+import { mapState } from 'vuex'
 export default {
   components: {
     Header
@@ -38,12 +39,35 @@ export default {
       return {
         margin: this.expandSideMenu ? '10px 0 10px 140px' : '10px 0'
       }
+    },
+    ...mapState({
+      getAllMenus: state => state.allMenus
+    })
+  },
+  watch: {
+    getAllMenus: {
+      handler (val) {
+        if (val) {
+          this.allMenusAry = val
+        }
+      },
+      immediate: true,
+      deep: true
+    },
+    allMenusAry: {
+      handler (val) {
+        this.setBreadcrumb()
+      },
+      immediate: true
+    },
+    $route: {
+      handler (val) {
+        this.setBreadcrumb()
+      },
+      immediate: true
     }
   },
   methods: {
-    allMenus (data) {
-      this.allMenusAry = data
-    },
     setBreadcrumb () {
       this.isShowBreadcrum = !(this.$route.path === '/homepage' || this.$route.path === '/404')
       if (this.$route.path === '/coming-soon') {
@@ -86,20 +110,6 @@ export default {
       this.expandSideMenu = val
     })
     this.setBreadcrumb()
-  },
-  watch: {
-    allMenusAry: {
-      handler (val) {
-        this.setBreadcrumb()
-      },
-      immediate: true
-    },
-    $route: {
-      handler (val) {
-        this.setBreadcrumb()
-      },
-      immediate: true
-    }
   }
 }
 </script>

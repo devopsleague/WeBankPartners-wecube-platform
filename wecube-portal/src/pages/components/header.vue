@@ -13,7 +13,7 @@
             </MenuItem>
 
             <Submenu v-else :name="menu.code">
-              <template slot="title" style="font-size: 16px">{{ menu.title }}</template>
+              <template slot="title">{{ menu.title }}</template>
               <router-link
                 v-for="submenu in menu.submenus"
                 :key="submenu.code"
@@ -119,11 +119,12 @@
   </div>
 </template>
 <script>
-import { clearLocalstorage } from '@/pages/util/localStorage.js'
 import Vue from 'vue'
 import { getMyMenus, getAllPluginPackageResourceFiles, getApplicationVersion, changePassword } from '@/api/server.js'
 import { getChildRouters } from '../util/router.js'
+import { clearLocalstorage } from '@/pages/util/localStorage.js'
 import { MENUS } from '../../const/menus.js'
+import { mapState } from 'vuex'
 export default {
   data () {
     return {
@@ -157,6 +158,27 @@ export default {
         newPassword: [{ required: true, message: 'New Password cannot be empty', trigger: 'blur' }],
         confirmPassword: [{ required: true, message: 'Confirm Password cannot be empty', trigger: 'blur' }]
       }
+    }
+  },
+  computed: {
+    ...mapState({
+      getAllMenus: state => state.allMenus
+    })
+  },
+  watch: {
+    getAllMenus: {
+      handler (val) {
+        if (val) {
+          this.menus = val
+        }
+      },
+      immediate: true,
+      deep: true
+    },
+    $lang: async function (lang) {
+      // await this.getMyMenus(true)
+      await this.$store.dispatch('updateMenus')
+      window.location.reload()
     }
   },
   methods: {
@@ -327,23 +349,17 @@ export default {
   async created () {
     this.getLocalLang()
     this.getApplicationVersion()
-    this.getMyMenus()
+    // this.getMyMenus()
     this.username = window.localStorage.getItem('username')
   },
-  watch: {
-    $lang: async function (lang) {
-      await this.getMyMenus(true)
-      window.location.reload()
-    }
-  },
   mounted () {
-    if (window.needReLoad) {
-      this.getAllPluginPackageResourceFiles()
-      window.needReLoad = false
-    }
-    this.$eventBusP.$on('updateMenus', () => {
-      this.getMyMenus()
-    })
+    // if (window.needReLoad) {
+    //   this.getAllPluginPackageResourceFiles()
+    //   window.needReLoad = false
+    // }
+    // this.$eventBusP.$on('updateMenus', () => {
+    //   this.getMyMenus()
+    // })
   }
 }
 </script>
