@@ -76,7 +76,7 @@ req.interceptors.response.use(
   err => {
     const { response } = err
     if (response.status === 401 && err.config.url !== '/auth/v1/api/login') {
-      let refreshToken = localStorage.getItem('wecube-refreshToken')
+      let refreshToken = localStorage.getItem('wecube-refreshToken') || []
       if (refreshToken.length > 0) {
         let refreshRequest = axios.get('/auth/v1/api/token', {
           headers: {
