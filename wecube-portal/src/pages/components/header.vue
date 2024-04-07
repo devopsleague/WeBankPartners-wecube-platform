@@ -120,10 +120,8 @@
 </template>
 <script>
 import Vue from 'vue'
-import { getMyMenus, getAllPluginPackageResourceFiles, getApplicationVersion, changePassword } from '@/api/server.js'
-import { getChildRouters } from '../util/router.js'
+import { getApplicationVersion, changePassword } from '@/api/server.js'
 import { clearLocalstorage } from '@/pages/util/localStorage.js'
-import { MENUS } from '../../const/menus.js'
 import { mapState } from 'vuex'
 export default {
   data () {
@@ -176,7 +174,6 @@ export default {
       deep: true
     },
     $lang: async function (lang) {
-      // await this.getMyMenus(true)
       await this.$store.dispatch('updateMenus')
       window.location.reload()
     }
@@ -234,122 +231,11 @@ export default {
       let currentLangKey = localStorage.getItem('lang') || navigator.language
       const lang = this.language[currentLangKey] || 'English'
       this.currentLanguage = lang
-    },
-    async getMyMenus () {
-      this.menus = []
-      let { status, data } = await getMyMenus()
-      if (status === 'OK') {
-        data.forEach(_ => {
-          if (!_.category) {
-            let menuObj = MENUS.find(m => m.code === _.code)
-            if (menuObj) {
-              this.menus.push({
-                title: this.$lang === 'zh-CN' ? menuObj.cnName : menuObj.enName,
-                id: _.id,
-                submenus: [],
-                ..._,
-                ...menuObj
-              })
-            } else {
-              this.menus.push({
-                title: _.code,
-                id: _.id,
-                submenus: [],
-                ..._
-              })
-            }
-          }
-        })
-        data.forEach(_ => {
-          if (_.category) {
-            let menuObj = MENUS.find(m => m.code === _.code)
-            if (menuObj) {
-              // Platform Menus
-              this.menus.forEach(h => {
-                if (_.category === '' + h.id) {
-                  h.submenus.push({
-                    title: this.$lang === 'zh-CN' ? menuObj.cnName : menuObj.enName,
-                    id: _.id,
-                    ..._,
-                    ...menuObj
-                  })
-                }
-              })
-            } else {
-              // Plugins Menus
-              this.menus.forEach(h => {
-                if (_.category === '' + h.id) {
-                  h.submenus.push({
-                    title: this.$lang === 'zh-CN' ? _.localDisplayName : _.displayName,
-                    id: _.id,
-                    link: _.path,
-                    ..._
-                  })
-                }
-              })
-            }
-          }
-        })
-        window.localStorage.setItem('wecube_cache_menus', JSON.stringify(this.menus))
-        this.$emit('allMenus', this.menus)
-        window.myMenus = this.menus
-        getChildRouters(window.routers || [])
-      }
-    },
-    async getAllPluginPackageResourceFiles () {
-      const { status, data } = await getAllPluginPackageResourceFiles()
-      if (status === 'OK' && data && data.length > 0) {
-        // const data = [
-        //   { relatedPath: 'http://localhost:8888/js/app.e4cd4d03.js ' },
-        //   { relatedPath: 'http://localhost:8888/css/app.f724c7a4.css' }
-        // ]
-        this.$Notice.info({
-          title: this.$t('notification_desc')
-        })
-        const eleContain = document.getElementsByTagName('body')
-        let script = {}
-        data.forEach(file => {
-          if (file.relatedPath.indexOf('.js') > -1) {
-            let contains = document.createElement('script')
-            contains.type = 'text/javascript'
-            contains.src = file.relatedPath
-            script[file.packageName] = contains
-            eleContain[0].appendChild(contains)
-          }
-          if (file.relatedPath.indexOf('.css') > -1) {
-            let contains = document.createElement('link')
-            contains.type = 'text/css'
-            contains.rel = 'stylesheet'
-            contains.href = file.relatedPath
-            eleContain[0].appendChild(contains)
-          }
-        })
-        Object.keys(script).forEach(key => {
-          if (script[key].readyState) {
-            // IE
-            script[key].onreadystatechange = () => {
-              if (script[key].readyState === 'complete' || script[key].readyState === 'loaded') {
-                script[key].onreadystatechange = null
-              }
-            }
-          } else {
-            // Non IE
-            script[key].onload = () => {
-              setTimeout(() => {
-                this.$Notice.success({
-                  title: `${key} ${this.$t('plugin_load')}`
-                })
-              }, 0)
-            }
-          }
-        })
-      }
     }
   },
   async created () {
     this.getLocalLang()
     this.getApplicationVersion()
-    // this.getMyMenus()
     this.username = window.localStorage.getItem('username')
   },
   mounted () {

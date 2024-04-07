@@ -46,6 +46,9 @@ export default {
         let localStorage = window.localStorage
         setLocalstorage(data)
         localStorage.setItem('username', this.username)
+        // 登录后加载菜单和资源文件
+        this.$store.dispatch('getAllPluginPackageResourceFiles')
+        this.$store.dispatch('updateMenus')
         this.$router.push('/homepage')
       }
       this.loading = false

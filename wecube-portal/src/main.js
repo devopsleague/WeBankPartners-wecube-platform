@@ -33,29 +33,17 @@ const vm = new Vue({
   store,
   render: h => h(App)
 })
-window.vm = vm
-window.locale = (key, obj) => {
-  const lang = vm._$lang.locales[key]
-  let newLang = {}
-  if (lang) {
-    newLang = { ...lang, ...obj }
-    vm._$lang.locales[key] = newLang
-  }
-}
-window.addOptions = options => {
-  Object.keys(options).forEach(key => {
-    // eslint-disable-next-line no-proto
-    vm.__proto__[key] = options[key]
-  })
-}
 
 vm.$mount('#wecube_app')
 
 window.request = req
 window.needReLoad = true
 window.routers = []
+window.vm = vm
+// 加载静态文件资源
 store.dispatch('getAllPluginPackageResourceFiles')
-window.needReLoad = false
+// window.needReLoad = false
+// 加载系统菜单
 store.dispatch('updateMenus')
 class UserWatch {
   constructor () {
@@ -154,7 +142,20 @@ window.component = (name, comp) => {
 window.use = (lib, options) => {
   Vue.use(lib, options)
 }
-
+window.locale = (key, obj) => {
+  const lang = vm._$lang.locales[key]
+  let newLang = {}
+  if (lang) {
+    newLang = { ...lang, ...obj }
+    vm._$lang.locales[key] = newLang
+  }
+}
+window.addOptions = options => {
+  Object.keys(options).forEach(key => {
+    // eslint-disable-next-line no-proto
+    vm.__proto__[key] = options[key]
+  })
+}
 const findPath = (routes, path) => {
   let found
   window.routers.concat(routes).forEach(route => {
