@@ -42,7 +42,7 @@ window.routers = []
 window.vm = vm
 // 加载静态文件资源
 store.dispatch('getAllPluginPackageResourceFiles')
-// window.needReLoad = false
+window.needReLoad = false
 // 加载系统菜单
 store.dispatch('updateMenus')
 class UserWatch {
