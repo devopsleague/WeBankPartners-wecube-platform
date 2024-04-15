@@ -6,17 +6,10 @@ import { MENUS } from '../const/menus.js'
 Vue.use(Vuex)
 const store = new Vuex.Store({
   state: {
-    count: 0,
     packageFiles: [],
     allMenus: []
   },
   mutations: {
-    increment (state) {
-      state.count++
-    },
-    decrement (state) {
-      state.count--
-    },
     setMenus (state, value) {
       state.allMenus = value
     },
@@ -25,12 +18,6 @@ const store = new Vuex.Store({
     }
   },
   actions: {
-    increment ({ commit }) {
-      commit('increment')
-    },
-    decrement ({ commit }) {
-      commit('decrement')
-    },
     updateMenus ({ commit }) {
       let menus = []
       getMyMenus().then(({ status, data }) => {
